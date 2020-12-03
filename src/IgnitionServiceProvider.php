@@ -50,6 +50,7 @@ use Facade\Ignition\SolutionProviders\UndefinedVariableSolutionProvider;
 use Facade\Ignition\SolutionProviders\UnknownValidationSolutionProvider;
 use Facade\Ignition\SolutionProviders\ViewNotFoundSolutionProvider;
 use Facade\Ignition\Views\Engines\CompilerEngine;
+use Facade\Ignition\Views\Engines\CompilerEngineWithLivewireSupport;
 use Facade\Ignition\Views\Engines\PhpEngine;
 use Facade\IgnitionContracts\SolutionProviderRepository as SolutionProviderRepositoryContract;
 use Illuminate\Foundation\Application;
@@ -131,6 +132,10 @@ class IgnitionServiceProvider extends ServiceProvider
         });
 
         $this->app->make('view.engine.resolver')->register('blade', function () {
+            if (class_exists(\Livewire\Livewire::class)) {
+                return new CompilerEngineWithLivewireSupport($this->app['blade.compiler']);
+            }
+
             return new CompilerEngine($this->app['blade.compiler']);
         });
 
